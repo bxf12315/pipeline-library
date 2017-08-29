@@ -199,8 +199,8 @@ def tagCommit(project, commitHash, tag) {
 }
 
 def tagCommitWithSSH(project, commitHash, tag) {
-    withCredentials([[$class: 'SSHUserPrivateKeyBinding', credentialsId: Constants.GITLAB_API_TOKEN_CREDENTIALS_ID,
-                      passphraseVariable: 'USERNAME', usernameVariable: 'token']]) {
+    withCredentials([SSHUserPrivateKeyBinding(Constants.GITLAB_API_TOKEN_CREDENTIALS_ID,
+            passphraseVariable: 'USERNAME', usernameVariable: 'token')]) {
 
         // Call Gitlab API to get project details, read project id
         def getProjectResponse = gitlab_getProjectDetails(token, project)
