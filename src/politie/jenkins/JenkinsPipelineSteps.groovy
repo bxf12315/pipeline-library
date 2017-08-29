@@ -198,5 +198,21 @@ def tagCommit(project, commitHash, tag) {
     }
 }
 
+def tagCommitWithSSH(project, commitHash, tag) {
+    withCredentials([[$class: 'SSHUserPrivateKeyBinding', credentialsId: Constants.GITLAB_API_TOKEN_CREDENTIALS_ID,
+                      passphraseVariable: 'USERNAME', usernameVariable: 'token']]) {
+
+        // Call Gitlab API to get project details, read project id
+        def getProjectResponse = gitlab_getProjectDetails(token, project)
+        def projectId = parseJsonText(getProjectResponse.content).id
+
+        // Call gitlab API to place a tag on the specific project and commithash
+        def performTagResponse = gitlab_performTag(token, projectId, commitHash, tag)
+        def tagCreated = parseJsonText(performTagResponse.content)
+
+        println 'Tagged commit ' + tagCreated.commit.id + ' with tag "' + tagCreated.name + '".'
+    }
+}
+
 // Return the contents of this script as object so it can be re-used in Jenkinsfiles.
 return this;
